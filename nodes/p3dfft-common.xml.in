@@ -1,0 +1,26 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+	<description>
+	p3dfft https://code.google.com/p/p3dfft
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2014 The Regents of the University of California.
+	All rights reserved. Rocks(r) v6.1.1 www.rocksclusters.org
+	
+	</copyright>
+
+	<changelog>
+	$Log$
+	</changelog>
+
+	<package>p3dfft_ROLLCOMPILER_ROLLMPI_ROLLNETWORK</package>
+	<package>p3dfft-roll-test</package>
+	<package>p3dfft-modules</package>
+	<package>roll-p3dfft-usersguide</package>
+
+
+</kickstart>
