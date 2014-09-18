@@ -128,9 +128,6 @@ install::
             module load fftw; \
             export CFLAGS="$(CONFIG_OPTS)"; \
             export FCFLAGS="$(CONFIG_OPTS)"; \
-            echo $${CFLAGS}; \
-            echo $${FCFLAGS}; \
-            exit; \
             OPTIONS=( " "  --enable-stride1 --enable-single --enable-single\ \--enable-stride1 ); \
             count=0; \
             cd $(SOURCE_DIR); \
@@ -159,7 +156,7 @@ install::
                tar xvzf $(SOURCE_PKG); \
                cd $(SOURCE_DIR); \
             done; \
-            cp $(SOURCE_DIR)/P3DFFT_User_Guide_2.7.1.pdf    $(ROOT)/$(PKGROOT)/doc \
+            cp P3DFFT_User_Guide_2.7.1.pdf    $(ROOT)/$(PKGROOT)/doc \
         )
 	cat p3dfft.module | perl -pi -e "s!MODULEROOT!/opt/modulefiles/applications/.$(ROLLCOMPILER)/p3dfft!g;s!VERSION!$(VERSION)!g;s!ROLLCOMPILER!$(ROLLCOMPILER)!g" \
           > $(REDHAT.ROOT)/src/build-p3dfft-modules/$(NAME).module

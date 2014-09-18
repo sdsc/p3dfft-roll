@@ -3,11 +3,11 @@
 #
 # @Copyright@
 # 
-# 				Rocks(r)
+# 				Rocks(tm)
 # 		         www.rocksclusters.org
-# 		       version 6.1.1 (Sand Boa)
+# 		        version 4.3 (Mars Hill)
 # 
-# Copyright (c) 2000 - 2014 The Regents of the University of California.
+# Copyright (c) 2000 - 2011 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 # 3. All advertising and press materials, printed or electronic, mentioning
 # features or use of this software must display the following acknowledgement: 
 # 
-# 	"This product includes software developed by the Rocks(r)
+# 	"This product includes software developed by the Rocks(tm)
 # 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
@@ -54,8 +54,6 @@
 # 
 # @Copyright@
 #
-# $Log$
-#
 
 ifndef ROLLCOMPILER
   ROLLCOMPILER = gnu
@@ -68,14 +66,17 @@ ifndef ROLLNETWORK
 endif
 
 -include $(ROLLSROOT)/etc/Rolls.mk
-include Rolls.mk
 
 default:
+# Copy and substitute lines of nodes/*.in that reference ROLLCOMPILER,
+# ROLLNETWORK, and/or ROLLMPI, making one copy for each
+# ROLLCOMPILER/ROLLNETWORK/ROLLMPI value
 	for i in `ls nodes/*.in`; do \
 	  export o=`echo $$i | sed 's/\.in//'`; \
 	  cp $$i $$o; \
 	  for c in $(ROLLCOMPILER); do \
-	    perl -pi -e 'print and s/ROLLCOMPILER/'$${c}'/g if m/ROLLCOMPILER/' $$o; \
+	    COMPILERNAME=`echo $$c | awk -F/ '{print $$1}'`; \
+	    perl -pi -e "print and s/COMPILERNAME/$${COMPILERNAME}/g if m/COMPILERNAME/" $$o; \
 	  done; \
 	  for n in $(ROLLNETWORK); do \
 	    perl -pi -e 'print and s/ROLLNETWORK/'$${n}'/g if m/ROLLNETWORK/' $$o; \
@@ -83,19 +84,17 @@ default:
 	  for m in $(ROLLMPI); do \
 	    perl -pi -e 'print and s/ROLLMPI/'$${m}'/g if m/ROLLMPI/' $$o; \
 	  done; \
-	  perl -pi -e '$$_ = "" if m/ROLL(COMPILER|NETWORK|MPI)/' $$o; \
+	  perl -pi -e '$$_ = "" if m/COMPILERNAME|ROLLNETWORK|ROLLMPI/' $$o; \
 	done
 	$(MAKE) ROLLCOMPILER="$(ROLLCOMPILER)" ROLLNETWORK="$(ROLLNETWORK)" ROLLMPI="$(ROLLMPI)" roll
 
 clean::
-	rm -f _arch bootstrap.py
+	rm -f _arch bootstrap.py 
 
-cvsclean: clean
+distclean: clean
 	for i in `ls nodes/*.in`; do \
 	  export o=`echo $$i | sed 's/\.in//'`; \
 	  rm -f $$o; \
 	done
 	rm -fr RPMS SRPMS src/build-*
-
-distclean:: cvsclean
 	-rm -f build.log
