@@ -40,7 +40,7 @@ foreach my $compiler (@COMPILERS) {
            foreach my $type  (@types) {
               $output = `. /etc/profile.d/modules.sh; module load $compiler ${mpi}_$network p3dfft;mpirun -np 8 \${P3DFFTHOME}/share/p3dfft-samples/p3dfft-${type}/test_sine_f.x`;
           like($output, qr/ Results are correct/,
-               "run using p3dfft/2.1.5/$compilername/$mpi/$type");
+               "run using p3dfft/$compilername/$mpi/$type");
            }
         }
       }

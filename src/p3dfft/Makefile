@@ -119,7 +119,7 @@ build: $(SRC_DIRS)
 	
 install::
         
-	mkdir -p $(ROOT)/$(PKGROOT)
+	mkdir -p $(ROOT)/$(PKGROOT)/doc
 	mkdir -p $(REDHAT.ROOT)/src/build-p3dfft
 	mkdir -p $(REDHAT.ROOT)/src/build-p3dfft-modules
 	( \
@@ -158,7 +158,8 @@ install::
                rm -rf $(SOURCE_DIR); \
                tar xvzf $(SOURCE_PKG); \
                cd $(SOURCE_DIR); \
-            done \
+            done; \
+            cp $(SOURCE_DIR)/P3DFFT_User_Guide_2.7.1.pdf    $(ROOT)/$(PKGROOT)/doc \
         )
 	cat p3dfft.module | perl -pi -e "s!MODULEROOT!/opt/modulefiles/applications/.$(ROLLCOMPILER)/p3dfft!g;s!VERSION!$(VERSION)!g;s!ROLLCOMPILER!$(ROLLCOMPILER)!g" \
           > $(REDHAT.ROOT)/src/build-p3dfft-modules/$(NAME).module

@@ -20,7 +20,5 @@
 	<package>p3dfft_ROLLCOMPILER_ROLLMPI_ROLLNETWORK</package>
 	<package>p3dfft-roll-test</package>
 	<package>p3dfft-modules</package>
-	<package>roll-p3dfft-usersguide</package>
-
 
 </kickstart>
