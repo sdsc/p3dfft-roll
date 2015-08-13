@@ -1,14 +1,26 @@
-PKGROOT            = /opt/p3dfft/$(ROLLCOMPILER)/$(ROLLMPI)/$(ROLLNETWORK)
-NAME               = p3dfft_$(ROLLCOMPILER)_$(ROLLMPI)_$(ROLLNETWORK)
-VERSION            = 2.6
-RELEASE            = 0
+ifndef ROLLCOMPILER
+  ROLLCOMPILER = gnu
+endif
+COMPILERNAME := $(firstword $(subst /, ,$(ROLLCOMPILER)))
 
-SRC_SUBDIR         = p3dfft
+ifndef ROLLMPI
+  ROLLMPI = rocks-openmpi
+endif
+MPINAME := $(firstword $(subst /, ,$(ROLLMPI)))
 
-SOURCE_NAME        = p3dfft
-SOURCE_VERSION     = $(VERSION)
-SOURCE_SUFFIX      = tar.gz
-SOURCE_PKG         = $(SOURCE_NAME)-$(SOURCE_VERSION).$(SOURCE_SUFFIX)
-SOURCE_DIR         = $(SOURCE_PKG:%.$(SOURCE_SUFFIX)=%)
+NAME           = sdsc-p3dfft_$(COMPILERNAME)_$(MPINAME)
+VERSION        = 2.7.1
+RELEASE        = 1
+PKGROOT        = /opt/p3dfft/$(COMPILERNAME)/$(MPINAME)
 
-TAR_GZ_PKGS           = $(SOURCE_PKG)
+SRC_SUBDIR     = p3dfft
+
+SOURCE_NAME    = p3dfft
+SOURCE_SUFFIX  = tar.gz
+SOURCE_VERSION = $(VERSION)
+SOURCE_PKG     = $(SOURCE_NAME)-$(SOURCE_VERSION).$(SOURCE_SUFFIX)
+SOURCE_DIR     = $(SOURCE_PKG:%.$(SOURCE_SUFFIX)=%)
+
+TAR_GZ_PKGS    = $(SOURCE_PKG)
+
+RPM.EXTRAS     = AutoReq:No

@@ -2,23 +2,17 @@
 
 <kickstart>
 
+<description>
+p3dfft https://code.google.com/p/p3dfft
+</description>
 
-	<description>
-	p3dfft https://code.google.com/p/p3dfft
-	</description>
+<copyright>
+Copyright (c) 2000 - 2015 The Regents of the University of California.
+All rights reserved. Rocks(r) v6.1.1 www.rocksclusters.org
+</copyright>
 
-	<copyright>
-	Copyright (c) 2000 - 2014 The Regents of the University of California.
-	All rights reserved. Rocks(r) v6.1.1 www.rocksclusters.org
-	
-	</copyright>
-
-	<changelog>
-	$Log$
-	</changelog>
-
-	<package>p3dfft_ROLLCOMPILER_ROLLMPI_ROLLNETWORK</package>
-	<package>p3dfft-roll-test</package>
-	<package>p3dfft-modules</package>
+<package>sdsc-p3dfft_COMPILERNAME_MPINAME</package>
+<package>sdsc-p3dfft-modules</package>
+<package>sdsc-p3dfft-roll-test</package>
 
 </kickstart>

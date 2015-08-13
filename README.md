@@ -1,8 +1,8 @@
-# SDSC p3dfft roll
+# SDSC "p3dfft" roll
 
 ## Overview
 
-This roll bundles p3dffft
+This roll bundles p3dfft.
 
 For more information about the various packages included in the p3dfft roll please visit their official web pages:
 
@@ -21,49 +21,45 @@ Rocks development machine.
 
 ## Dependencies
 
-fftw roll
+The sdsc-roll must be installed on the build machine, since the build process
+depends on make include files provided by that roll.
+
+The roll sources assume that modulefiles provided by SDSC compiler and mpi
+rolls are available, but it will build without them as long as the environment
+variables they provide are otherwise defined.
+
+The build process requires the fftw libraries and assumes that the fftw
+modulefile provided by the SDSC fftw-roll is available.  It will build without
+the modulefile as long as the environment variables it provides are otherwise
+defined.
 
 
 ## Building
 
-To build the p3dfft-roll, execute these instructions on a Rocks development
+To build the p3dfft-roll, execute this on a Rocks development
 machine (e.g., a frontend or development appliance):
 
 ```shell
-% make default 2>&1 | tee build.log
-% grep "RPM build error" build.log
+% make 2>&1 | tee build.log
 ```
 
-If nothing is returned from the grep command then the roll should have been
-created as... `p3dfft-*.iso`. If you built the roll on a Rocks frontend then
-proceed to the installation step. If you built the roll on a Rocks development
-appliance you need to copy the roll to your Rocks frontend before continuing
-with installation.
+A successful build will create the file `p3dfft-*.disk1.iso`.  If you built the
+roll on a Rocks frontend, proceed to the installation step. If you built the
+roll on a Rocks development appliance, you need to copy the roll to your Rocks
+frontend before continuing with installation.
 
 This roll source supports building with different compilers and for different
-network fabrics and mpi flavors.  By default, it builds using the gnu compilers
-for openmpi ethernet.  To build for a different configuration, use the
-`ROLLCOMPILER`, `ROLLMPI` and `ROLLNETWORK` make variables, e.g.,
+MPI flavors.  The `ROLLCOMPILER` and `ROLLMPI` make variables can be used to
+specify the names of compiler and MPI modulefiles to use for building the
+software, e.g.,
 
 ```shell
-make ROLLCOMPILER=intel ROLLMPI=mpich2 ROLLNETWORK=mx 
+make ROLLCOMPILER='gnu intel' ROLLMPI=mvapich2_ib 2>&1 | tee build.log
 ```
 
-The build process currently supports one or more of the values "intel", "pgi",
-and "gnu" for the `ROLLCOMPILER` variable, defaulting to "gnu".  It supports
-`ROLLMPI` values "openmpi", "mpich2", and "mvapich2", defaulting to "openmpi".
-It uses any `ROLLNETWORK` variable value(s) to load appropriate mpi modules,
-assuming that there are modules named `$(ROLLMPI)_$(ROLLNETWORK)` available
-(e.g., `openmpi_ib`, `mpich2_mx`, etc.).
-
-If the `ROLLCOMPILER`, `ROLLNETWORK` and/or `ROLLMPI` variables are specified,
-their values are incorporated into the names of the produced roll and rpms, e.g.,
-
-```shell
-make ROLLCOMPILER=intel ROLLMPI=mvapich2 ROLLNETWORK=ib
-```
-produces a roll with a name that begins "`p3dfft_intel_mvapich2_ib`"; it
-contains and installs similarly-named rpms.
+The build process recognizes "gnu", "intel" or "pgi" for the values for the
+`ROLLCOMPILER` variable; any MPI modulefile name may be used for the values of
+the `ROLLMPI` variable.  The default values are "gnu" and "rocks-openmpi".
 
 For gnu compilers, the roll also supports a `ROLLOPTS` make variable value of
 'avx', indicating that the target architecture supports AVX instructions.
@@ -92,15 +88,9 @@ module files in:
 ## Testing
 
 The p3dfft-roll includes a test script which can be run to verify proper
-installation of the p3dfft-roll documentation, binaries and module files. To
+installation of the roll documentation, binaries and module files. To
 run the test scripts execute the following command(s):
 
 ```shell
 % /root/rolltests/p3dfft.t 
-ok 1 - p3dfft is installed
-ok 2 - p3dfft test run
-ok 3 - p3dfft module installed
-ok 4 - p3dfft version module installed
-ok 5 - p3dfft version module link created
-1..5
 ```
