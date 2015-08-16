@@ -61,107 +61,85 @@ REDHAT.ROOT = $(CURDIR)/../../
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
-include pull.mk
+include $(SDSCDEVEL)/Pull.mk
+include $(SDSCDEVEL)/Rules.mk
 
-ifndef ROLLCOMPILER
-  ROLLCOMPILER = gnu
-endif
-ifndef ROLLNETWORK
-  ROLLNETWORK = eth
-endif
-ifndef ROLLMPI
-  ROLLMPI = openmpi
-endif
+#
+# Note: ROLLMPI=rocks-openmpi requires use of the system compiler because of
+# mpi.mod incompatibility
+#
 
+P3DFFT_CACHE = $(REDHAT.ROOT)/cache/build-p3dfft
 
-COMPILERSETUP = \
-  if test -e /etc/profile.d/modules.sh; then \
-    . /etc/profile.d/modules.sh; \
-    latestModule=`module avail 2>&1 | grep -o '$(ROLLCOMPILER)/[^ (]*' | sed 's/$(ROLLCOMPILER).//' | sort -t. -k1,1n -k2,2n -k3,3n | tail -1`; \
-    module load $(ROLLCOMPILER)/$${latestModule}; \
-  fi
+$(NAME).spec: DESCRIPTION LICENSE
 
-MPIMODULE = $(ROLLMPI)_$(ROLLNETWORK)
+DESCRIPTION:
+	if test "$(MPINAME)" != "rocks-openmpi"; then \
+	  $(MODULE_LOAD_FC); \
+	fi; \
+	$(MODULE_LOAD_MPI); \
+	( \
+	  $(DESCRIBE_PKG); \
+	  $(DESCRIBE_FC); \
+	  $(DESCRIBE_MPI); \
+	  $(DESCRIBE_FFTW) \
+	) > $@
 
-MPISETUP = \
-  if test -e /etc/profile.d/modules.sh; then \
-    . /etc/profile.d/modules.sh; \
-    module load $(MPIMODULE); \
-  fi; \
-  export MPI_HOME=`which mpicxx | perl -pe 's!/bin/.*!!'`; \
-  if test -z "$${MPI_HOME}"; then \
-    export MPI_HOME=/opt/$(ROLLMPI); \
-  fi; \
-  echo Using MPI from $${MPI_HOME}; \
-  export PATH=$${PATH}:$${MPI_HOME}/bin; \
-  export LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$${MPI_HOME}/lib
-
-export CC=mpicc
-export FC=mpif90
-CONFIG_OPTS=-O3
-COMPILER=--enable-gnu
-ifeq ("$(ROLLCOMPILER)", "intel")
-COMPILER=--enable-intel
-else ifeq ("$(ROLLCOMPILER)", "pgi")
-COMPILER=--enable-pgi
-endif
-LIBNAMES=p3dfft-double p3dfft-double-noncontiguous p3dfft-single p3dfft-single-noncontiguous
-ifneq ("$(ROLLOPTS)", "$(subst avx,,$(ROLLOPTS))")
-  ifneq ("$(COMPILERNAME)", "pgi")
-    CONFIG_OPTS +=  --enable-avx
-  endif
-endif
-
-  
+LICENSE: $(SRC_DIRS)
+	$(CHECK_LICENSE_FILES)
+	echo GPLv3+ > $@
 
 build: $(SRC_DIRS)
 	@echo "::: Package $(NAME) build complete :::"
 	
 install::
-        
-	mkdir -p $(ROOT)/$(PKGROOT)/doc
-	mkdir -p $(REDHAT.ROOT)/src/build-p3dfft
-	mkdir -p $(REDHAT.ROOT)/src/build-p3dfft-modules
+	mkdir -p -m 755 $(ROOT)/$(PKGROOT)/doc
 	( \
-            $(COMPILERSETUP); \
-            $(MPISETUP); \
-            module load fftw; \
-            export CFLAGS="$(CONFIG_OPTS)"; \
-            export FCFLAGS="$(CONFIG_OPTS)"; \
-            OPTIONS=( " "  --enable-stride1 --enable-single --enable-single\ \--enable-stride1 ); \
-            count=0; \
-            cd $(SOURCE_DIR); \
-            for lib in $(LIBNAMES); do \
-               ./configure $(COMPILER) --prefix=$(REDHAT.ROOT)/src/build-p3dfft --enable-fftw --with-fftw=$${FFTWHOME} $${OPTIONS[$${count}]}; \
-               $(MAKE); \
-               $(MAKE) install; \
-               mkdir -p $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$${lib}; \
-               if test $${count} -eq 0; then \
-                   cp -r $(REDHAT.ROOT)/src/build-p3dfft/* $(ROOT)/$(PKGROOT); \
-                   cd $(ROOT)/$(PKGROOT)/lib; \
-                   ln -s libp3dfft.a lib$${lib}.a; \
-                   cd $(ROOT)/$(PKGROOT)/include; \
-                   ln -s p3dfft.mod $${lib}.mod; \
-                   cd $(PWD)/$(SOURCE_DIR); \
-               else \
-                   cp $(REDHAT.ROOT)/src/build-p3dfft/lib/libp3dfft.a $(ROOT)/$(PKGROOT)/lib/lib$${lib}.a; \
-                   cp $(REDHAT.ROOT)/src/build-p3dfft/include/p3dfft.mod $(ROOT)/$(PKGROOT)/include/$${lib}.mod; \
-                   cp $(REDHAT.ROOT)/src/build-p3dfft/share/p3dfft-samples/*.x $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$${lib}; \
-               fi; \
-               rm -rf $(REDHAT.ROOT)/src/build-p3dfft/*; \
-               mv $(ROOT)/$(PKGROOT)/share/p3dfft-samples/*.x $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$${lib}; \
-               count=$$(( $${count} + 1 )); \
-               cd ..; \
-               rm -rf $(SOURCE_DIR); \
-               tar xvzf $(SOURCE_PKG); \
-               cd $(SOURCE_DIR); \
-            done; \
-            cp P3DFFT_User_Guide_2.7.1.pdf    $(ROOT)/$(PKGROOT)/doc \
-        )
-	cat p3dfft.module | perl -pi -e "s!MODULEROOT!/opt/modulefiles/applications/.$(ROLLCOMPILER)/p3dfft!g;s!VERSION!$(VERSION)!g;s!ROLLCOMPILER!$(ROLLCOMPILER)!g" \
-          > $(REDHAT.ROOT)/src/build-p3dfft-modules/$(NAME).module
-
+	  $(MODULE_LOAD_FC); \
+	  $(MODULE_LOAD_MPI); \
+	  $(MODULE_LOAD_FFTW); \
+	  fftwHome=$$FFTWHOME; \
+	  if test "$(MPINAME)" = "rocks-openmpi"; then \
+	    module unload $(ROLLCOMPILER); \
+	    perl -pi -e 's/lmpichf90/lmpi_f90/g' $(SOURCE_DIR)/configure; \
+	  fi; \
+	  export CC=mpicc; \
+	  export FC=mpif90; \
+	  export CFLAGS=-O3; \
+	  export FCFLAGS=-O3; \
+	  cd $(SOURCE_DIR); \
+	  for lib in p3dfft-double p3dfft-double-noncontiguous p3dfft-single p3dfft-single-noncontiguous; do \
+	    singleopt= ; \
+	    strideopt= ; \
+	    if echo $$lib | grep -q single; then \
+	      singleopt=--enable-single; \
+	    fi; \
+	    if echo $$lib | grep -q noncontinuous; then \
+	      strideopt=--enable-stride; \
+	    fi; \
+	    ./configure --prefix=$(P3DFFT_CACHE)/$$lib \
+	                --enable-$(COMPILERNAME) \
+	                --enable-fftw --with-fftw=$$fftwHome \
+	                $$singleopt $$strideopt; \
+	    $(MAKE) || exit 2; \
+	    $(MAKE) install || exit 2; \
+	    mkdir -p -m 755 $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$$lib; \
+	    if test ! -f $(ROOT)/$(PKGROOT)/lib; then \
+	      cp -r $(P3DFFT_CACHE)/$$lib/* $(ROOT)/$(PKGROOT)/; \
+	      ln -s libp3dfft.a $(ROOT)/$(PKGROOT)/lib/lib$$lib.a; \
+	      ln -s p3dfft.mod $(ROOT)/$(PKGROOT)/include/$$lib.mod; \
+	      mv $(ROOT)/$(PKGROOT)/share/p3dfft-samples/*.x $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$$lib; \
+	    else \
+	      cp $(P3DFFT_CACHE)/$$lib/lib/libp3dfft.a $(ROOT)/$(PKGROOT)/lib/lib$$lib.a; \
+	      cp $(P3DFFT_CACHE)/$$lib/include/p3dfft.mod $(ROOT)/$(PKGROOT)/include/$$lib.mod; \
+	      cp $(P3DFFT_CACHE)/$$lib/share/p3dfft-samples/*.x $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$$lib; \
+	    fi; \
+	    make clean; \
+	  done; \
+	  cp P3DFFT_User_Guide_2.7.1.pdf $(ROOT)/$(PKGROOT)/doc \
+	)
+	$(INSTALL_LICENSE_FILES)
 	@echo "::: Package $(NAME) install complete :::"
 
 clean::
-	rm -rf $(SOURCE_DIR)
+	rm -rf $(SOURCE_DIR) DESCRIPTION LICENSE

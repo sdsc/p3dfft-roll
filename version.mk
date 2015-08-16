@@ -1,6 +1,6 @@
-ROLLNAME        = p3dfft
-VERSION         = 1
-RELEASE         = 0
-COLOR           = firebrick
+ROLLNAME	= fftw
+VERSION        :=$(shell bash version.sh -v)
+RELEASE        :=$(shell bash version.sh -h)
+COLOR		= firebrick
 
-REDHAT.ROOT     = $(CURDIR)
+REDHAT.ROOT = $(PWD)
