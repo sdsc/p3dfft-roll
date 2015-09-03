@@ -12,7 +12,7 @@ All rights reserved. Rocks(r) v6.1.1 www.rocksclusters.org
 </copyright>
 
 <package>sdsc-p3dfft_COMPILERNAME_MPINAME</package>
-<package>sdsc-p3dfft-modules</package>
+<package>sdsc-p3dfft-modules_COMPILERNAME</package>
 <package>sdsc-p3dfft-roll-test</package>
 
 </kickstart>
