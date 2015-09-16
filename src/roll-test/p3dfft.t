@@ -33,7 +33,10 @@ foreach my $compiler(@COMPILERS) {
   my $compilername = (split('/', $compiler))[0];
   foreach my $mpi(@MPIS) {
     foreach my $type(@types) {
-      $output = `module load $compiler $mpi p3dfft; mpirun -np 8 \${P3DFFTHOME}/share/p3dfft-samples/p3dfft-${type}/test_sine_f.x`;
+      $output = `module load $compiler $mpi p3dfft; mpirun -np 8 \${P3DFFTHOME}/share/p3dfft-samples/p3dfft-${type}/test_sine_f.x 2>&1`;
+      if($output =~ /run-as-root/) {
+        $output = `module load $compiler $mpi p3dfft; mpirun --allow-run-as-root -np 8 \${P3DFFTHOME}/share/p3dfft-samples/p3dfft-${type}/test_sine_f.x 2>&1`;
+      }
       like($output, qr/ Results are correct/,
              "run using p3dfft/$compilername/$mpi/$type");
     }
