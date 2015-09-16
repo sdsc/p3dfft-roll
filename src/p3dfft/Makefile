@@ -101,7 +101,11 @@ install::
 	  fftwHome=$$FFTWHOME; \
 	  if test "$(MPINAME)" = "rocks-openmpi"; then \
 	    module unload $(ROLLCOMPILER); \
+	  fi; \
+	  if test -f $${MPIHOME}/lib/libmpi_f90.a; then \
 	    perl -pi -e 's/lmpichf90/lmpi_f90/g' $(SOURCE_DIR)/configure; \
+	  elif test -f $${MPIHOME}/lib/libmpi_mpifh.a; then \
+	    perl -pi -e 's/lmpichf90/lmpi_mpifh/g' $(SOURCE_DIR)/configure; \
 	  fi; \
 	  export CC=mpicc; \
 	  export FC=mpif90; \
