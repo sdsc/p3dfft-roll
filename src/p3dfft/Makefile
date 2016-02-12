@@ -111,6 +111,7 @@ install::
 	  export FC=mpif90; \
 	  export CFLAGS=-O3; \
 	  export FCFLAGS=-O3; \
+          export LDFLAGS="-lpthread -lm"; \
 	  cd $(SOURCE_DIR); \
 	  for lib in p3dfft-double p3dfft-double-noncontiguous p3dfft-single p3dfft-single-noncontiguous; do \
 	    singleopt= ; \
