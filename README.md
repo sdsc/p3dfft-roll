@@ -61,9 +61,6 @@ The build process recognizes "gnu", "intel" or "pgi" for the values for the
 `ROLLCOMPILER` variable; any MPI modulefile name may be used for the values of
 the `ROLLMPI` variable.  The default values are "gnu" and "rocks-openmpi".
 
-For gnu compilers, the roll also supports a `ROLLOPTS` make variable value of
-'avx', indicating that the target architecture supports AVX instructions.
-
 
 ## Installation
 
