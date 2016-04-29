@@ -10,7 +10,7 @@ MPINAME := $(firstword $(subst /, ,$(ROLLMPI)))
 
 NAME           = sdsc-p3dfft_$(COMPILERNAME)_$(MPINAME)
 VERSION        = 2.7.4
-RELEASE        = 0
+RELEASE        = 1
 PKGROOT        = /opt/p3dfft/$(COMPILERNAME)/$(MPINAME)
 
 SRC_SUBDIR     = p3dfft
