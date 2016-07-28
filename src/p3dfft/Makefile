@@ -128,7 +128,7 @@ install::
 	    $(MAKE) || exit 2; \
 	    $(MAKE) install || exit 2; \
 	    mkdir -p -m 755 $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$$lib; \
-	    if test ! -f $(ROOT)/$(PKGROOT)/lib; then \
+	    if test \! -e $(ROOT)/$(PKGROOT)/lib; then \
 	      cp -r $(P3DFFT_CACHE)/$$lib/* $(ROOT)/$(PKGROOT)/; \
 	      ln -s libp3dfft.a $(ROOT)/$(PKGROOT)/lib/lib$$lib.a; \
 	      ln -s p3dfft.mod $(ROOT)/$(PKGROOT)/include/$$lib.mod; \
