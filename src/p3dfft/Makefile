@@ -118,8 +118,8 @@ install::
 	    if echo $$lib | grep -q single; then \
 	      singleopt=--enable-single; \
 	    fi; \
-	    if echo $$lib | grep -q noncontinuous; then \
-	      strideopt=--enable-stride; \
+	    if echo $$lib | grep -q noncontiguous; then \
+	      strideopt=--enable-stride1; \
 	    fi; \
 	    ./configure --prefix=$(P3DFFT_CACHE)/$$lib \
 	                --enable-$(COMPILERNAME) \
