@@ -41,14 +41,17 @@ foreach my $compiler(@COMPILERS) {
              "run using p3dfft/$compilername/$mpi/$type");
     }
   }
-  `/bin/ls /opt/modulefiles/applications/.$compilername/p3dfft/.version.* 2>&1`;
-  ok($? == 0, "p3dfft $compilername version module installed");
-  ok(-l "/opt/modulefiles/applications/.$compilername/p3dfft/.version",
-     "p3dfft $compilername version module link created");
   $output = `module load $compiler p3dfft; echo \$P3DFFTHOME 2>&1`;
   my $firstmpi = $MPIS[0];
   $firstmpi =~ s#/.*##;
   like($output, qr#/opt/p3dfft/$compiler/$firstmpi#, 'p3dfft modulefile defaults to first mpi');
 }
+
+`/bin/ls /opt/modulefiles/applications/p3dfft/[0-9]* 2>&1`;
+ok($? == 0, "p3dfft module installed");
+`/bin/ls /opt/modulefiles/applications/p3dfft/.version.[0-9]* 2>&1`;
+ok($? == 0, "p3dfft version module installed");
+ok(-l "/opt/modulefiles/applications/p3dfft/.version",
+   "p3dfft version module link created");
 
 `rm -fr $TESTFILE* dims stdin`;
