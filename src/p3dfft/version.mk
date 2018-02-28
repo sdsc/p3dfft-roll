@@ -10,7 +10,7 @@ MPINAME := $(firstword $(subst /, ,$(ROLLMPI)))
 
 NAME           = sdsc-p3dfft_$(COMPILERNAME)_$(MPINAME)
 VERSION        = 2.7.4
-RELEASE        = 3
+RELEASE        = 4
 PKGROOT        = /opt/p3dfft/$(COMPILERNAME)/$(MPINAME)
 
 SRC_SUBDIR     = p3dfft
@@ -23,4 +23,5 @@ SOURCE_DIR     = $(SOURCE_PKG:%.$(SOURCE_SUFFIX)=%)
 
 TAR_GZ_PKGS    = $(SOURCE_PKG)
 
-RPM.EXTRAS     = AutoReq:No
+RPM.EXTRAS     = AutoReq:No\nAutoProv:No
+RPM.PREFIX     = $(PKGROOT)
