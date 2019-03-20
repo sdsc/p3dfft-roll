@@ -1,0 +1,28 @@
+--- p3dfft-2.7.7/configure.ac	2018-09-20 12:55:58.000000000 -0700
++++ patch-files/configure.ac	2019-03-22 15:38:04.350352281 -0700
+@@ -92,14 +92,14 @@
+         if test "$ok" = "yes"; then
+ 	        AC_SUBST(FORTRAN_LIB,"-lmpi_mpifh -limf -lifcore") 
+         else
+-	        AC_SUBST(FORTRAN_LIB,"-limf -lifcore") #-lmpichf90 
++	        AC_SUBST(FORTRAN_LIB,"-limf -lifcore -lmpifort") #-lmpichf90 
+         fi
+     ;;
+     pgi)
+         if test "$ok" = "yes"; then
+             AC_SUBST(FORTRAN_LIB,"-lmpi_mpifh -pgf90libs")
+         else
+-            AC_SUBST(FORTRAN_LIB,"-lmpichf90 -pgf90libs")
++            AC_SUBST(FORTRAN_LIB,"-pgf90libs -lmpifort")
+         fi
+     ;;
+     cray)
+@@ -108,7 +108,7 @@
+         if test "$ok" = "yes"; then
+ 	        AC_SUBST(FORTRAN_LIB,"-lmpi_mpifh -lgfortran")
+         else
+-	        AC_SUBST(FORTRAN_LIB,"-lgfortran -lmpichf90")
++	        AC_SUBST(FORTRAN_LIB,"-lgfortran -lmpifort")
+         fi
+     ;;
+     *)

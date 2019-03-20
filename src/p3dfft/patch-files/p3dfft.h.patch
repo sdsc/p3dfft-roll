@@ -1,0 +1,13 @@
+--- p3dfft-2.7.7/include/p3dfft.h	2018-09-20 12:55:58.000000000 -0700
++++ patch-files/p3dfft.h	2019-03-22 12:00:29.922452332 -0700
+@@ -93,8 +93,8 @@
+ #else
+ extern void Cp3dfft_ftran_r2c(float *A,float *B, unsigned char *op);
+ extern void Cp3dfft_btran_c2r(float *A,float *B, unsigned char *op);
+-extern void Cp3dfft_ftran_r2c_many(float *A,float *B, unsigned char *op);
+-extern void Cp3dfft_btran_c2r_many(float *A,float *B, unsigned char *op);
++extern void Cp3dfft_ftran_r2c_many(float *A,int dim_in,float *B, int dim_out,int nv,unsigned char *op);
++extern void Cp3dfft_btran_c2r_many(float *A,int dim_in,float *B, int dim_out,int nv, unsigned char *op);
+ #endif
+ 
+ extern void Cget_timers(double *timers);
