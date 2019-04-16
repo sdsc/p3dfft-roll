@@ -73,6 +73,11 @@ P3DFFT_CACHE = $(REDHAT.ROOT)/cache/build-p3dfft
 
 $(NAME).spec: DESCRIPTION LICENSE
 
+USE_OPENMPI =
+ifeq ($(findstring openmpi,$(MPINAME)),openmpi)
+  USE_OPENMPI = --enable-openmpi
+endif
+
 DESCRIPTION:
 	if test "$(MPINAME)" != "rocks-openmpi"; then \
 	  $(MODULE_LOAD_FC); \
@@ -93,6 +98,8 @@ build: $(SRC_DIRS)
 	
 install::
 	mkdir -p -m 755 $(ROOT)/$(PKGROOT)/doc
+	patch $(SOURCE_DIR)/include/p3dfft.h patch-files/p3dfft.h.patch
+	patch $(SOURCE_DIR)/configure.ac patch-files/configure.ac.patch
 	( \
 	  $(MODULE_LOAD_FC); \
 	  $(MODULE_LOAD_MPI); \
@@ -101,17 +108,16 @@ install::
 	  if test "$(MPINAME)" = "rocks-openmpi"; then \
 	    module unload $(ROLLCOMPILER); \
 	  fi; \
-	  if test -f $${MPIHOME}/lib/libmpi_f90.a; then \
-	    perl -pi -e 's/lmpichf90/lmpi_f90/g' $(SOURCE_DIR)/configure; \
-	  elif test -f $${MPIHOME}/lib/libmpi_mpifh.a; then \
-	    perl -pi -e 's/lmpichf90/lmpi_mpifh/g' $(SOURCE_DIR)/configure; \
-	  fi; \
 	  export CC=mpicc; \
 	  export FC=mpif90; \
 	  export CFLAGS=-O3; \
 	  export FCFLAGS=-O3; \
           export LDFLAGS="-lpthread -lm"; \
 	  cd $(SOURCE_DIR); \
+          autoconf; \
+          autoheader; \
+          aclocal; \
+          automake; \
 	  for lib in p3dfft-double p3dfft-double-noncontiguous p3dfft-single p3dfft-single-noncontiguous; do \
 	    singleopt= ; \
 	    strideopt= ; \
@@ -124,7 +130,7 @@ install::
 	    ./configure --prefix=$(P3DFFT_CACHE)/$$lib \
 	                --enable-$(COMPILERNAME) \
 	                --enable-fftw --with-fftw=$$fftwHome \
-	                $$singleopt $$strideopt; \
+	                $$singleopt $$strideopt $(USE_OPENMPI); \
 	    $(MAKE) || exit 2; \
 	    $(MAKE) install || exit 2; \
 	    mkdir -p -m 755 $(ROOT)/$(PKGROOT)/share/p3dfft-samples/$$lib; \
@@ -140,7 +146,7 @@ install::
 	    fi; \
 	    make clean; \
 	  done; \
-	  cp P3DFFT_User_Guide_2.7.1.pdf $(ROOT)/$(PKGROOT)/doc \
+	  cp P3DFFT_User_Guide_2.7.5.pdf $(ROOT)/$(PKGROOT)/doc \
 	)
 	$(INSTALL_LICENSE_FILES)
 	@echo "::: Package $(NAME) install complete :::"
